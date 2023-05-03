@@ -4,6 +4,8 @@ from tkinter import messagebox
 from pymongo import MongoClient
 from bson import ObjectId
 from bson.errors import InvalidId
+import csv
+from tkinter import filedialog
 
 
 
@@ -21,6 +23,23 @@ root.title("Drilling Data GUI")
 
 # Global variable to store selected entry ID
 selected_entry_id = None
+
+
+def import_csv_data():
+    # Open file selection prompt
+    file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    
+    if file_path:
+        # Open the selected CSV file for reading
+        with open(file_path, 'r') as file:
+            reader = csv.DictReader(file)
+
+            # Iterate over each row in the CSV file
+            for row in reader:
+                # Insert the row data into the MongoDB collection
+                collection.insert_one(row)
+
+        status_label.config(text="CSV data imported successfully")
 
 # Function to insert data into MongoDB
 def add_entry():
@@ -267,14 +286,18 @@ view_button.grid(row=7, column=1)
 view_all_button = Button(root, text="View All Entries", command=view_all_entries)
 view_all_button.grid(row=7, column=3)
 
+import_button = Button(root, text="Import CSV", command=import_csv_data)
+import_button.grid(row=7, column=4)
+
 
 # Result Text
 result_text = Text(root, height=10, width=20)
-result_text.grid(row=8, columnspan=4)
+result_text.grid(row=8, columnspan=8)
 
 # Status Label
 status_label = Label(root, text="")
 status_label.grid(row=12, columnspan=4)
+
 
 root.mainloop()
 
